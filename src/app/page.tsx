@@ -1,95 +1,209 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+'use client'
+
+import React, {useState} from 'react';
+import styles from './page.module.css';
+import { useForm } from "react-hook-form";
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Paper from '@mui/material/Paper';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import InputAdornment from '@mui/material/InputAdornment';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import IconButton from '@mui/material/IconButton';
+import Alert from '@mui/material/Alert';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import FormHelperText from '@mui/material/FormHelperText';
+import { useRouter } from 'next/navigation';
+import PostLogin from '@/api/PostLogin';
+import PostCreateUser from '@/api/PostCreateUser';
 
 export default function Home() {
+
+  const router = useRouter();
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [typeForm, setTypeForm] = useState(0); // 0 - Criar conta e 1 - Login
+  const [errorLogin, setErrorLogin] = useState(false);
+  const [erroCadastro, setErroCadastro] = useState(false);
+  const [sucessoCadastro, setSucessoCadastro] = useState(false);
+  const { register, handleSubmit, watch, setError, clearErrors, setValue, formState: { errors } } = useForm({
+    defaultValues: {
+      name: '',
+      email: '',
+      password: ''
+    }
+  });
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
+  const onSubmit = async (e: any) => {
+    console.log(e);
+    console.log(typeForm)
+
+    const name = watch('name');
+    const email = watch('email');
+    const password = watch('password');
+
+    // Fazer Login
+    if(typeForm === 0){
+      
+      const data: any = await PostLogin(email, password);
+
+      if(data?.status === false) {
+        setErrorLogin(true);
+      }
+      else {
+        setErrorLogin(false);
+
+        localStorage.setItem('token', data?.user?.token);
+        localStorage.setItem('id', data?.user?.usuario_id);
+        localStorage.setItem('email', data?.user?.email);
+      }
+
+      router.push('/todo-list');
+    }
+
+    // Criar conta
+    else{
+      const data: any = await PostCreateUser(name, email, password);
+      if(data?.status === false) setErroCadastro(true);
+      else {
+        setErroCadastro(false);
+        setSucessoCadastro(true);
+      }
+    }
+  }
+
+  const handleTypeForm = (value: number) => {
+    let type = value;
+
+    if(type === 1) type = 0
+    else type = 1
+   
+    setValue('name', '');
+    clearErrors('name');
+    setValue('email', '');
+    clearErrors('email');
+    setValue('password', '');
+    clearErrors('password');
+    setTypeForm(type);
+    setErroCadastro(false);
+    setErrorLogin(false);
+    setSucessoCadastro(false);
+  }
+
+  console.log(watch());
+  console.log('Errors: ' , errors);
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+    <div className="content">
+      <div className='header'>
+        <h1>Todo List</h1>
+      </div>
+      
+      <Paper elevation={3}>
+        <div className={styles.login}>
+          <h2>Faça seu {typeForm === 0 ? 'login' : 'cadastro'}</h2>
+          <form onSubmit={handleSubmit(onSubmit)}>
+
+            {
+              (!!errorLogin || !!erroCadastro) ?
+                <Alert variant="outlined" severity="warning" style={{marginBottom: '20px'}}>
+                  {
+                    errorLogin === true 
+                      ? 'Email ou senha incorretos, tente novamente.' 
+                      : erroCadastro === true
+                        ? 'Erro ao cadastrar.'
+                          : '' 
+                  }
+                </Alert>
+
+                :
+                !!sucessoCadastro &&
+                  <Alert variant="outlined" severity="success" style={{marginBottom: '20px'}}>
+                    Cadastro realizado com sucesso. Faça seu login.
+                  </Alert>
+            }
+
+            {
+              typeForm === 1 && 
+              <TextField 
+                error={!!errors?.name}
+                fullWidth
+                id="outlined-basic" 
+                label="Nome" 
+                variant="outlined" 
+                {...register("name", { required: true })} 
+                helperText={errors?.name?.type === 'required' ? 'Campo obrigatório' : ''}
+              />
+            }
+
+            <TextField 
+              error={!!errors?.email}
+              fullWidth
+              id="outlined-basic" 
+              label="E-mail" 
+              variant="outlined" 
+              {...register("email", { pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g, required: true })} 
+              helperText={errors?.email?.type === 'pattern' ? 'Formato de e-mail inválido' : errors?.email?.type === 'required' ? 'Campo obrigatório' : ''}
             />
-          </a>
+
+            <FormControl sx={{ m: 0, width: '100%' }} variant="outlined" error={!!errors?.password}>
+              <InputLabel htmlFor={"outlined-adornment-password"}>Senha</InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-password"
+                type={showPassword ? 'text' : 'password'}
+                {...register("password", { required: true, minLength: 8 })} 
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="Password"
+              />
+              <FormHelperText id="component-error-text">
+                {
+                  errors.password ?
+                    errors?.password?.type === "minLength" 
+                    ? 'A senha deve ter no mínimo 8 caracteres' 
+                    : errors?.password?.type === 'required' 
+                      ? 'Campo obrigatório' 
+                      : ''
+                  : ''
+                }
+              </FormHelperText>
+            </FormControl>
+
+            <Button 
+              style={{marginTop: '15px'}}
+              variant="contained" 
+              type="submit" 
+              fullWidth
+            >
+              {typeForm === 0 ? 'Entrar' : 'Cadastrar'}
+            </Button>
+            <div className="line"></div>
+            <Button 
+              variant="outlined" 
+              fullWidth 
+              onClick={e => handleTypeForm(typeForm)}
+            >
+              Quero {typeForm === 0 ? 'criar uma conta' : 'fazer Login'}
+            </Button>
+          </form>
         </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      </Paper>
+    </div>
   )
 }

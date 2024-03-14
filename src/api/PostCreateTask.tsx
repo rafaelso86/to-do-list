@@ -4,7 +4,7 @@ async function PostCreateTask(userId: number, id: number, name: string, check: n
     let data;
     const token = await localStorage.getItem('token');
 
-    await Axios.post('http://localhost:3333/task/create', 
+    await Axios.post(process.env.NEXT_PUBLIC_TODO_LIST_SERVER + 'task/create', 
         {user_id: userId, list_id: id, name: name, check: check},
         {
             headers: {

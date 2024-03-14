@@ -4,7 +4,7 @@ async function GetShowTasks(userId: number, listId: number ) {
     let data;
     const token = await localStorage.getItem('token');
 
-    await Axios.get('http://localhost:3333/tasks/show/' + userId + '/' + listId, 
+    await Axios.get(process.env.NEXT_PUBLIC_TODO_LIST_SERVER + 'tasks/show/' + userId + '/' + listId, 
         {
             headers: {
                 'Authorization': `Bearer ${token}`

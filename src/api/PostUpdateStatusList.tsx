@@ -4,7 +4,7 @@ async function PostUpdateStatusList(userId: number, listId: number, status: stri
     let dataUpdate;
     const token = await localStorage.getItem('token');
 
-    await Axios.post('http://localhost:3333/list/status-update', 
+    await Axios.post(process.env.NEXT_PUBLIC_TODO_LIST_SERVER + 'list/status-update', 
         {user_id: userId, list_id: listId, status: status},
         {
             headers: {

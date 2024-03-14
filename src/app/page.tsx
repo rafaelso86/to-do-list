@@ -41,9 +41,6 @@ export default function Home() {
   };
 
   const onSubmit = async (e: any) => {
-    console.log(e);
-    console.log(typeForm)
-
     const name = watch('name');
     const email = watch('email');
     const password = watch('password');
@@ -95,9 +92,6 @@ export default function Home() {
     setErrorLogin(false);
     setSucessoCadastro(false);
   }
-
-  console.log(watch());
-  console.log('Errors: ' , errors);
 
   return (
     <div className="content">

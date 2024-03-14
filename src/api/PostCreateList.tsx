@@ -4,7 +4,7 @@ async function PostCreateList(userId: number, name: string, status: string ) {
     let data;
     const token = await localStorage.getItem('token');
 
-    await Axios.post('http://localhost:3333/list/create', 
+    await Axios.post(process.env.NEXT_PUBLIC_TODO_LIST_SERVER + 'list/create', 
         {user_id: userId, name: name, status: status},
         {
             headers: {

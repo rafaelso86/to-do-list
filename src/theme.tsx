@@ -1,12 +1,12 @@
 'use client';
-import { Roboto } from 'next/font/google';
+// import { Roboto } from 'next/font/google';
 import { createTheme } from '@mui/material/styles';
 
-const roboto = Roboto({
-  weight: ['300', '400', '500', '700'],
-  subsets: ['latin'],
-  display: 'swap',
-});
+// const roboto = Roboto({
+//   weight: ['300', '400', '500', '700'],
+//   subsets: ['latin'],
+//   display: 'swap',
+// });
 
 const theme = createTheme({
   palette: {
@@ -24,9 +24,9 @@ const theme = createTheme({
     //   contrastText: '#000',
     // },
   },
-  typography: {
-    fontFamily: roboto.style.fontFamily,
-  },
+  // typography: {
+  //   fontFamily: roboto.style.fontFamily,
+  // },
 
   components: {
     MuiAlert: {

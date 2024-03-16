@@ -46,7 +46,7 @@ export default function TodoList() {
         <TodoListContext.Provider value={context}>
             <div className="content-todo">
                 <div className="header">
-                    <h1>Todo List</h1>
+                    <h1>To Do List</h1>
                     <Button variant="text" onClick={handleLogout} title="Sair">
                         <Logout/>
                     </Button>

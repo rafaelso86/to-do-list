@@ -96,7 +96,7 @@ export default function Home() {
   return (
     <div className="content">
       <div className='header'>
-        <h1>Todo List</h1>
+        <h1>To Do List</h1>
       </div>
       
       <Paper elevation={3}>

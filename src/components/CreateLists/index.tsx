@@ -37,7 +37,7 @@ export default function CreateLists() {
 
     const returnLists = async () => {
         const data: any = await GetShowLists(userId);
-        let objTodo = data.lista.map((lista: any) => ({
+        let objTodo = data?.lista?.map((lista: any) => ({
             user_id: lista?.user_id,
             id: lista?.id,
             title: lista?.name,

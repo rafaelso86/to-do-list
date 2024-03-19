@@ -4,7 +4,7 @@ async function GetShowTasks(userId: number, listId: number ) {
     let data;
     const token = await localStorage.getItem('token');
 
-    await Axios.get(process.env.NEXT_PUBLIC_TODO_LIST_SERVER + 'tasks/show/' + userId + '/' + listId, 
+    await Axios.get('https://to-do-list-server-hg32.onrender.com/tasks/show/' + userId + '/' + listId, 
         {
             headers: {
                 'Authorization': `Bearer ${token}`

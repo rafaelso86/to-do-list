@@ -4,7 +4,7 @@ async function PostDeleteList(userId: number, id: number) {
     let data;
     const token = await localStorage.getItem('token');
 
-    await Axios.post(process.env.NEXT_PUBLIC_TODO_LIST_SERVER + 'list/delete', 
+    await Axios.post('https://to-do-list-server-hg32.onrender.com/list/delete', 
         {user_id: userId, id: id},
         {
             headers: {

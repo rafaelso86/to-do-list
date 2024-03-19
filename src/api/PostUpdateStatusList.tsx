@@ -4,7 +4,7 @@ async function PostUpdateStatusList(userId: number, listId: number, status: stri
     let dataUpdate;
     const token = await localStorage.getItem('token');
 
-    await Axios.post(process.env.NEXT_PUBLIC_TODO_LIST_SERVER + 'list/status-update', 
+    await Axios.post('https://to-do-list-server-hg32.onrender.com/list/status-update', 
         {user_id: userId, list_id: listId, status: status},
         {
             headers: {

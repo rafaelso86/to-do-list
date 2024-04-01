@@ -131,6 +131,7 @@ export default function Home() {
                 id="outlined-basic" 
                 label="Nome" 
                 variant="outlined" 
+                autoComplete='off'
                 {...register("name", { required: true })} 
                 helperText={errors?.name?.type === 'required' ? 'Campo obrigatório' : ''}
               />
@@ -142,6 +143,7 @@ export default function Home() {
               id="outlined-basic" 
               label="E-mail" 
               variant="outlined" 
+              autoComplete='off'
               {...register("email", { pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g, required: true })} 
               helperText={errors?.email?.type === 'pattern' ? 'Formato de e-mail inválido' : errors?.email?.type === 'required' ? 'Campo obrigatório' : ''}
             />
